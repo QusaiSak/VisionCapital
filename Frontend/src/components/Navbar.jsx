@@ -1,19 +1,19 @@
 import { Button } from "@/components/ui/button";
 import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    navigationMenuTriggerStyle,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
-import { ChartLine, IndianRupee,Briefcase, Menu, PieChart } from "lucide-react";
+import { Briefcase, ChartLine, IndianRupee, Menu, PieChart, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogInOut from "./LogInOut";
 import { ModeToggle } from "./mode-toggle";
@@ -30,7 +30,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6 md:gap-10">
           <NavigationMenu className="hidden md:flex">
-            <Link to="/" className="flex items-center space-x-2 mr-10 ml-2">
+            <Link to="/" className="flex items-center space-x-2 mr-10 ml-2 ">
                 <PieChart className="h-6 w-6" />
                 <span className="font-bold">VisionCapital</span>
             </Link>
@@ -41,14 +41,14 @@ export function Navbar() {
                     <Link to={item.href} className={navigationMenuTriggerStyle()}>
                       <item.icon className="mr-2 h-4 w-4" />
                       <span>{item.title}</span>
-                    </Link>
+                    </Link> 
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center relative left-16">
           <ModeToggle />
           <LogInOut />
         </div>
@@ -86,3 +86,4 @@ export function Navbar() {
     </header>
   );
 }
+
