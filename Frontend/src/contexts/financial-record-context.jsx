@@ -1,8 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-// Define the base URL for API calls
-const BASE_URL = process.env.REACT_APP_BASE_URL
+const BASE_URL = "https://visioncapital-backend.onrender.com"
 
 
 
@@ -119,6 +118,45 @@ export const FinancialRecordsProvider = ({ children }) => {
     }
   };
 
+  // Add state and functions for savings goal
+  const [savingsGoal, setSavingsGoal] = useState(null);
+
+  const addSavingsGoal = async (goalData) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/savings-goal`, goalData);
+      setSavingsGoal(response.data);
+    } catch (error) {
+      console.error("Error adding savings goal:", error);
+    }
+  };
+
+  const getSavingsGoal = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/savings-goal/${user.id}`);
+      setSavingsGoal(response.data);
+    } catch (error) {
+      console.error("Error fetching savings goal:", error);
+    }
+  };
+
+  const updateSavingsGoal = async (goalId, updatedData) => {
+    try {
+      const response = await axios.put(`${BASE_URL}/api/savings-goal/${goalId}`, updatedData);
+      setSavingsGoal(response.data);
+    } catch (error) {
+      console.error("Error updating savings goal:", error);
+    }
+  };
+
+  const deleteSavingsGoal = async (goalId) => {
+    try {
+      await axios.delete(`${BASE_URL}/api/savings-goal/${goalId}`);
+      setSavingsGoal(null);
+    } catch (error) {
+      console.error("Error deleting savings goal:", error);
+    }
+  };
+
   // Provide context values
   return (
     <FinancialRecordsContext.Provider
@@ -131,6 +169,11 @@ export const FinancialRecordsProvider = ({ children }) => {
         updateIncomeRecord,
         deleteExpenseRecord,
         deleteIncomeRecord,
+        savingsGoal,
+        addSavingsGoal,
+        getSavingsGoal,
+        updateSavingsGoal,
+        deleteSavingsGoal,
       }}
     >
       {children} {/* Ensure children are rendered */}

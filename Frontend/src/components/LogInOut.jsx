@@ -8,7 +8,7 @@ const LogInOut = () => {
       <SignedOut>
         <SignInButton mode="modal">
           <Button variant="ghost" className="flex items-center space-x-2">
-            <LogIn/>
+            Sign In<LogIn/>
           </Button>
         </SignInButton>
       </SignedOut>
