@@ -7,7 +7,11 @@ require('dotenv').config()
 const port = process.env.PORT || 3001;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ["https://vision-capital-1qpl.vercel.app/"],
+  methods: ["POST", "GET"],
+  credentials: true
+}));
 
 const mongoURI = process.env.mongoURI
 
