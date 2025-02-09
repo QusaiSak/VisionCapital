@@ -2,7 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
-const BASE_URL = 'http://localhost:3001/financial-records'; // Make sure this matches your backend URL
+const BASE_URL = import.meta.env.BASE_URL; // Make sure this matches your backend URL
 
 // Create the context for financial records
 export const FinancialRecordsContext = createContext(undefined);
