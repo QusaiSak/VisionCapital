@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { createContext, useContext,useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const BASE_URL = import.meta.env.BASE_URL; // Make sure this matches your backend URL
 
@@ -12,6 +12,7 @@ export const FinancialRecordsProvider = ({ children }) => {
   const [expenseRecords, setExpenseRecords] = useState([]);
   const [incomeRecords, setIncomeRecords] = useState([]);
   const { user } = useUser();
+  axios.defaults.withCredentials = true;
 
   const fetchRecords = async () => {
     if (!user) return;
