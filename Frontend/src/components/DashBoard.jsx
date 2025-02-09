@@ -2,19 +2,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useFinancialRecords } from "@/contexts/financial-record-context"
 import { ArrowDownIcon, ArrowUpIcon, DollarSign } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const DashBoard = () => {
-  const { expenseRecords, incomeRecords, savingsGoal, getSavingsGoal } = useFinancialRecords();
+  const { expenseRecords, incomeRecords } = useFinancialRecords();
 
-  useEffect(() => {
-    getSavingsGoal();
-  }, []);
-
+ 
   const totalExpenses = expenseRecords.reduce((sum, record) => sum + record.amount, 0);
   const totalIncome = incomeRecords.reduce((sum, record) => sum + record.amount, 0);
   const remainingBudget = totalIncome - totalExpenses;
@@ -120,26 +117,6 @@ const DashBoard = () => {
             </p>
           </CardContent>
         </Card>
-        {savingsGoal && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Savings Goal</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{savingsGoal.goalName}</div>
-              <p className="text-xs text-muted-foreground">
-                Target: ₹{savingsGoal.goalAmount.toFixed(2)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Monthly savings: ₹{savingsGoal.requiredMonthlySavings.toFixed(2)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Additional needed: ₹{savingsGoal.additionalSavingsNeeded.toFixed(2)}
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         <Card>
