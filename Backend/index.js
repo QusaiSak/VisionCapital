@@ -8,7 +8,7 @@ const port = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors({
-  origin: ["https://vision-capital-1qpl.vercel.app/"],
+  origin: ["https://vision-capital-frontend.vercel.app/"],
   methods: ["POST", "GET"],
   credentials: true
 }));
