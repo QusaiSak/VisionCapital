@@ -4,7 +4,7 @@ const cors = require('cors');
 const financialRecordRouter = require('./src/routes/financial-records');
 const app = express();
 require('dotenv').config()
-const port = process.env.port;
+const port = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors());
@@ -14,7 +14,7 @@ const mongoURI = process.env.mongoURI
 mongoose
   .connect(mongoURI)
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Couldn't connect to MongoDB", err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use("/financial-records", financialRecordRouter);
 

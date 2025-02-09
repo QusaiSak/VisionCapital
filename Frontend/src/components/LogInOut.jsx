@@ -1,5 +1,5 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { LogIn } from 'lucide-react';
 
 const LogInOut = () => {
@@ -13,11 +13,7 @@ const LogInOut = () => {
         </SignInButton>
       </SignedOut>
       <SignedIn>
-        <UserButton>
-          <Button variant="solid" className="flex items-center space-x-2">
-            <span>Profile</span>
-          </Button>
-        </UserButton>
+        <UserButton />
       </SignedIn>
     </header>
   );

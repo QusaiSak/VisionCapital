@@ -1,61 +1,55 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { useUser } from "@clerk/clerk-react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import PropTypes from 'prop-types'
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useFinancialRecords } from "../contexts/financial-record-context"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useUser } from "@clerk/clerk-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { useFinancialRecords } from "../contexts/financial-record-context";
 
-// Update the Zod schema to include a date field
+// Zod Schema for Validation
 const formSchema = z.object({
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }),
+  description: z.string().min(2, { message: "Description must be at least 2 characters." }),
   amount: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
     message: "Amount must be a positive number.",
   }),
-  category: z.string().min(1, {
-    message: "Please select a category.",
-  }),
-  incomeSource: z.string().min(1, {
-    message: "Please select an income source.",
-  }),
-  date: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Please select a valid date.",
-  }),
-})
+  category: z.string().min(1, { message: "Please select a category." }),
+  incomeSource: z.string().min(1, { message: "Please select an income source." }),
+  date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Please select a valid date." }),
+});
+
+// Helper function to format dates
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-GB');
+  return new Date(date).toLocaleDateString("en-GB");
 };
 
 const EditableCard = ({ record, updateRecord, deleteRecord }) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [description, setDescription] = useState(record.description)
-  const [amount, setAmount] = useState(record.amount)
-  const [category, setCategory] = useState(record.category)
-  const [incomeSource, setIncomeSource] = useState(record.incomeSource)
-  const [date, setDate] = useState(new Date(record.date).toISOString().split('T')[0]) // Format date for input
+  const [isEditing, setIsEditing] = useState(false);
+  const [description, setDescription] = useState(record.description);
+  const [amount, setAmount] = useState(record.amount);
+  const [category, setCategory] = useState(record.category);
+  const [incomeSource, setIncomeSource] = useState(record.incomeSource);
+  const [date, setDate] = useState(new Date(record.date).toISOString().split("T")[0]);
 
   const handleUpdate = () => {
     updateRecord(record._id, {
@@ -64,10 +58,10 @@ const EditableCard = ({ record, updateRecord, deleteRecord }) => {
       amount: parseFloat(amount),
       category,
       incomeSource,
-      date: new Date(date), // Convert back to Date object
-    })
-    setIsEditing(false)
-  }
+      date: new Date(date),
+    });
+    setIsEditing(false);
+  };
 
   return (
     <Card className="mb-4">
@@ -118,26 +112,26 @@ const EditableCard = ({ record, updateRecord, deleteRecord }) => {
             <p><strong>Amount:</strong> ₹{amount}</p>
             <p><strong>Category:</strong> {category}</p>
             <p><strong>Income Source:</strong> {incomeSource}</p>
-            <p><strong>Date:</strong> {formatDate(date)}</p> {/* Display formatted date */}
+            <p><strong>Date:</strong> {formatDate(date)}</p>
             <Button onClick={() => setIsEditing(true)} className="mr-2 mt-2">
               Edit
             </Button>
-            <Button onClick={() => {
-              const recordId = record._id ?? "";
-              console.log("Deleting record with id:", recordId);
-              deleteRecord(recordId);
-            }} variant="destructive" className="mt-2">
+            <Button
+              onClick={() => deleteRecord(record._id)}
+              variant="destructive"
+              className="mt-2"
+            >
               Delete
             </Button>
           </>
         )}
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 const FinancialRecordList = () => {
-  const { incomeRecords, updateIncomeRecord, deleteIncomeRecord } = useFinancialRecords()
+  const { incomeRecords, updateIncomeRecord, deleteIncomeRecord } = useFinancialRecords();
 
   return (
     <div className="space-y-4 overflow-y-auto max-h-[600px] pr-4">
@@ -150,12 +144,12 @@ const FinancialRecordList = () => {
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
 export function IncomeForm() {
-  const { addIncomeRecord } = useFinancialRecords()
-  const { user } = useUser()
+  const { addIncomeRecord } = useFinancialRecords();
+  const { user } = useUser();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -164,28 +158,26 @@ export function IncomeForm() {
       amount: "",
       category: "",
       incomeSource: "",
-      date: "", // Add default value for date
+      date: "",
     },
-  })
+  });
 
-  function onSubmit(values) {
-    const newRecord = {
-      userId: user?.id ?? "",
-      date: new Date(values.date), // Use the date from the form
-      description: values.description,
-      amount: parseFloat(values.amount),
-      category: values.category,
-      incomeSource: values.incomeSource,
+  async function onSubmit(values) {
+    try {
+      const newRecord = {
+        userId: user?.id ?? "",
+        description: values.description,
+        amount: parseFloat(values.amount),
+        category: values.category,
+        incomeSource: values.incomeSource,
+        date: new Date(values.date).toISOString(),
+      };
+
+      await addIncomeRecord(newRecord);
+      form.reset();
+    } catch (error) {
+      console.error("Error submitting income record:", error);
     }
-
-    addIncomeRecord(newRecord)
-    form.reset({
-      description: "",
-      amount: "",
-      category: "",
-      incomeSource: "",
-      date: "", // Reset date as well
-    })
   }
 
   return (
@@ -208,9 +200,7 @@ export function IncomeForm() {
                       <FormControl>
                         <Input placeholder="Enter income description" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Briefly describe the income.
-                      </FormDescription>
+                      <FormDescription>Briefly describe the income.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -224,9 +214,7 @@ export function IncomeForm() {
                       <FormControl>
                         <Input type="number" placeholder="Enter amount" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Enter the income amount.
-                      </FormDescription>
+                      <FormDescription>Enter the income amount.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -251,9 +239,7 @@ export function IncomeForm() {
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>
-                        Select the category of the income.
-                      </FormDescription>
+                      <FormDescription>Select the category of the income.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -277,9 +263,7 @@ export function IncomeForm() {
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>
-                        Select the source of the income.
-                      </FormDescription>
+                      <FormDescription>Select the source of the income.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -291,11 +275,9 @@ export function IncomeForm() {
                     <FormItem>
                       <FormLabel>Date</FormLabel>
                       <FormControl>
-                        <Input type="date" placeholder="Select a date" {...field} />
+                        <Input type="date" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Choose the date of the income record.
-                      </FormDescription>
+                      <FormDescription>Choose the date of the income record.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -316,10 +298,19 @@ export function IncomeForm() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
+
+// PropTypes for EditableCard
 EditableCard.propTypes = {
-  record: PropTypes.object.isRequired,
+  record: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    category: PropTypes.string.isRequired,
+    incomeSource: PropTypes.string.isRequired,
+    date: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]).isRequired,
+  }).isRequired,
   updateRecord: PropTypes.func.isRequired,
   deleteRecord: PropTypes.func.isRequired,
 };

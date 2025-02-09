@@ -1,9 +1,8 @@
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-const BASE_URL = "https://visioncapital-backend.onrender.com"
 
-
+const BASE_URL = 'http://localhost:3001/financial-records'; // Make sure this matches your backend URL
 
 // Create the context for financial records
 export const FinancialRecordsContext = createContext(undefined);
@@ -12,70 +11,79 @@ export const FinancialRecordsContext = createContext(undefined);
 export const FinancialRecordsProvider = ({ children }) => {
   const [expenseRecords, setExpenseRecords] = useState([]);
   const [incomeRecords, setIncomeRecords] = useState([]);
+  const [savingsGoal, setSavingsGoal] = useState(null);
   const { user } = useUser();
 
-  // Fetch financial records based on the user's ID
   const fetchRecords = async () => {
     if (!user) return;
-
+    
     try {
-      const expenseResponse = await axios.get(
-        `${BASE_URL}/expense/getAllByUserID/${user.id}`
-      );
-      const incomeResponse = await axios.get(
-        `${BASE_URL}/income/getAllByUserID/${user.id}`
-      );
-
+      // Get expense records
+      const expenseResponse = await axios.get(`${BASE_URL}/expense/getAllByUserID/${user.id}`);
       setExpenseRecords(expenseResponse.data);
+
+      // Get income records
+      const incomeResponse = await axios.get(`${BASE_URL}/income/getAllByUserID/${user.id}`);
       setIncomeRecords(incomeResponse.data);
-    } catch (err) {
-      console.error("Error fetching records:", err);
+    } catch (error) {
+      console.error('Error fetching records:', error);
     }
   };
 
-  // Fetch records whenever the user changes
-  useEffect(() => {
-    fetchRecords();
-  }, [user]); // Ensure to include user in the dependency array
+  const getSavingsGoal = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await axios.get(`${BASE_URL}/savings-goal/${user.id}`);
+      setSavingsGoal(response.data);
+    } catch (error) {
+      console.error('Error fetching savings goal:', error);
+    }
+  };
 
-  // Add a new expense record
+  useEffect(() => {
+    if (user) {
+      fetchRecords();
+      getSavingsGoal();
+    }
+  }, [user]);
+
+  // Add expense record
   const addExpenseRecord = async (record) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/expense`,
-        record
-      );
-      setExpenseRecords((prev) => [...prev, response.data]);
-    } catch (err) {
-      console.error("Error adding expense record:", err);
+      const response = await axios.post(`${BASE_URL}/expense`, record);
+      setExpenseRecords(prev => [...prev, response.data]);
+      await fetchRecords(); // Refresh records after adding
+      return response.data;
+    } catch (error) {
+      console.error('Error adding expense record:', error);
+      throw error;
     }
   };
 
-  // Add a new income record
+  // Add income record
   const addIncomeRecord = async (record) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/income`,
-        record
-      );
-      setIncomeRecords((prev) => [...prev, response.data]);
-    } catch (err) {
-      console.error("Error adding income record:", err);
+      const response = await axios.post(`${BASE_URL}/income`, record);
+      setIncomeRecords(prev => [...prev, response.data]);
+      await fetchRecords(); // Refresh records after adding
+      return response.data;
+    } catch (error) {
+      console.error('Error adding income record:', error);
+      throw error;
     }
   };
 
   // Update an existing expense record
   const updateExpenseRecord = async (id, newRecord) => {
     try {
-      const response = await axios.put(
-        `${BASE_URL}/expense/${id}`,
-        newRecord
+      const response = await axios.put(`${BASE_URL}/expense/${id}`, newRecord);
+      setExpenseRecords(prev =>
+        prev.map(record => record._id === id ? response.data : record)
       );
-      setExpenseRecords((prev) =>
-        prev.map((record) => (record._id === id ? response.data : record))
-      );
-    } catch (err) {
-      console.error("Error updating expense record:", err);
+    } catch (error) {
+      console.error('Error updating expense record:', error);
+      throw error;
     }
   };
 
@@ -96,13 +104,12 @@ export const FinancialRecordsProvider = ({ children }) => {
 
   // Delete an expense record
   const deleteExpenseRecord = async (id) => {
-    console.log("Attempting to delete expense record with ID:", id); // Log the ID being deleted
     try {
       await axios.delete(`${BASE_URL}/expense/${id}`);
-      setExpenseRecords((prev) => prev.filter((record) => record._id !== id));
-      console.log("Successfully deleted expense record with ID:", id); // Confirm deletion
-    } catch (err) {
-      console.error("Error deleting expense record:", err);
+      setExpenseRecords(prev => prev.filter(record => record._id !== id));
+    } catch (error) {
+      console.error('Error deleting expense record:', error);
+      throw error;
     }
   };
 
@@ -119,23 +126,12 @@ export const FinancialRecordsProvider = ({ children }) => {
   };
 
   // Add state and functions for savings goal
-  const [savingsGoal, setSavingsGoal] = useState(null);
-
   const addSavingsGoal = async (goalData) => {
     try {
       const response = await axios.post(`${BASE_URL}/api/savings-goal`, goalData);
       setSavingsGoal(response.data);
     } catch (error) {
       console.error("Error adding savings goal:", error);
-    }
-  };
-
-  const getSavingsGoal = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/savings-goal/${user.id}`);
-      setSavingsGoal(response.data);
-    } catch (error) {
-      console.error("Error fetching savings goal:", error);
     }
   };
 

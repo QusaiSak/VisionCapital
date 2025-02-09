@@ -1,59 +1,53 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useFinancialRecords } from "../contexts/financial-record-context";
 
-// Define the schema for form validation
+// Zod Schema for Validation
 const formSchema = z.object({
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }),
+  description: z.string().min(2, { message: "Description must be at least 2 characters." }),
   amount: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
     message: "Amount must be a positive number.",
   }),
-  category: z.string().min(1, {
-    message: "Please select a category.",
-  }),
-  paymentMethod: z.string().min(1, {
-    message: "Please select a payment method.",
-  }),
-  date: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Please select a valid date.",
-  }),
+  category: z.string().min(1, { message: "Please select a category." }),
+  paymentMethod: z.string().min(1, { message: "Please select a payment method." }),
+  date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Please select a valid date." }),
 });
+
+// Helper function to format dates
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-GB');
+  return new Date(date).toLocaleDateString("en-GB");
 };
-// EditableCard component for displaying and editing expense records
+
 const EditableCard = ({ record, updateRecord, deleteRecord }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [description, setDescription] = useState(record.description);
   const [amount, setAmount] = useState(record.amount);
   const [category, setCategory] = useState(record.category);
   const [paymentMethod, setPaymentMethod] = useState(record.paymentMethod);
-  const [date, setDate] = useState(new Date(record.date).toISOString().split('T')[0])
+  const [date, setDate] = useState(new Date(record.date).toISOString().split("T")[0]);
 
   const handleUpdate = () => {
     updateRecord(record._id, {
@@ -62,7 +56,7 @@ const EditableCard = ({ record, updateRecord, deleteRecord }) => {
       amount: parseFloat(amount),
       category,
       paymentMethod,
-      date: new Date(date), // Include date in the update
+      date: new Date(date),
     });
     setIsEditing(false);
   };
@@ -116,15 +110,15 @@ const EditableCard = ({ record, updateRecord, deleteRecord }) => {
             <p><strong>Amount:</strong> ₹{amount}</p>
             <p><strong>Category:</strong> {category}</p>
             <p><strong>Payment Method:</strong> {paymentMethod}</p>
-            <p><strong>Date:</strong> {formatDate(date)}</p> {/* Display date */}
+            <p><strong>Date:</strong> {formatDate(date)}</p>
             <Button onClick={() => setIsEditing(true)} className="mr-2 mt-2">
               Edit
             </Button>
-            <Button onClick={() => {
-              const recordId = record._id ?? "";
-              console.log("Deleting record with id:", recordId);
-              deleteRecord(recordId);
-            }} variant="destructive" className="mt-2">
+            <Button
+              onClick={() => deleteRecord(record._id)}
+              variant="destructive"
+              className="mt-2"
+            >
               Delete
             </Button>
           </>
@@ -134,7 +128,6 @@ const EditableCard = ({ record, updateRecord, deleteRecord }) => {
   );
 };
 
-// FinancialRecordList component for displaying a list of expense records
 const FinancialRecordList = () => {
   const { expenseRecords, updateExpenseRecord, deleteExpenseRecord } = useFinancialRecords();
 
@@ -152,7 +145,6 @@ const FinancialRecordList = () => {
   );
 };
 
-// ExpenseForm component for adding new expense records
 export function ExpenseForm() {
   const { addExpenseRecord } = useFinancialRecords();
   const { user } = useUser();
@@ -164,14 +156,14 @@ export function ExpenseForm() {
       amount: "",
       category: "",
       paymentMethod: "",
-      date: "", // Add date to default values
+      date: "",
     },
   });
 
   function onSubmit(values) {
     const newRecord = {
       userId: user?.id ?? "",
-      date: values.date, // Set date to the selected date
+      date: new Date(values.date),
       description: values.description,
       amount: parseFloat(values.amount),
       category: values.category,
@@ -179,13 +171,7 @@ export function ExpenseForm() {
     };
 
     addExpenseRecord(newRecord);
-    form.reset({
-      description: "",
-      amount: "",
-      category: "",
-      paymentMethod: "",
-      date: "", // Reset date field
-    });
+    form.reset();
   }
 
   return (
@@ -208,9 +194,7 @@ export function ExpenseForm() {
                       <FormControl>
                         <Input placeholder="Enter expense description" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Briefly describe the expense.
-                      </FormDescription>
+                      <FormDescription>Briefly describe the expense.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -224,9 +208,7 @@ export function ExpenseForm() {
                       <FormControl>
                         <Input type="number" placeholder="Enter amount" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Enter the expense amount.
-                      </FormDescription>
+                      <FormDescription>Enter the expense amount.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -245,15 +227,14 @@ export function ExpenseForm() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="Food">Food</SelectItem>
-                          <SelectItem value="Rent">Rent</SelectItem>
-                          <SelectItem value="Utilities">Utilities</SelectItem>
+                          <SelectItem value="Transportation">Transportation</SelectItem>
                           <SelectItem value="Entertainment">Entertainment</SelectItem>
+                          <SelectItem value="Shopping">Shopping</SelectItem>
+                          <SelectItem value="Bills">Bills</SelectItem>
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>
-                        Select the category of the expense.
-                      </FormDescription>
+                      <FormDescription>Select the category of the expense.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -271,14 +252,14 @@ export function ExpenseForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Credit Card">Credit Card</SelectItem>
                           <SelectItem value="Cash">Cash</SelectItem>
-                          <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                          <SelectItem value="Credit Card">Credit Card</SelectItem>
+                          <SelectItem value="Debit Card">Debit Card</SelectItem>
+                          <SelectItem value="UPI">UPI</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>
-                        Select the payment method used.
-                      </FormDescription>
+                      <FormDescription>Select the payment method used.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -292,9 +273,7 @@ export function ExpenseForm() {
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Select the date of the expense.
-                      </FormDescription>
+                      <FormDescription>Choose the date of the expense.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -318,9 +297,16 @@ export function ExpenseForm() {
   );
 }
 
-// Prop Types for EditableCard
+// PropTypes for EditableCard
 EditableCard.propTypes = {
-  record: PropTypes.object.isRequired,
+  record: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    category: PropTypes.string.isRequired,
+    paymentMethod: PropTypes.string.isRequired,
+    date: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]).isRequired,
+  }).isRequired,
   updateRecord: PropTypes.func.isRequired,
   deleteRecord: PropTypes.func.isRequired,
 };
