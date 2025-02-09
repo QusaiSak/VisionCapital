@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Briefcase, ChartLine, IndianRupee, Menu, PieChart, Target } from "lucide-react";
+import { Briefcase, ChartLine, IndianRupee, Menu, PieChart } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogInOut from "./LogInOut";
 import { ModeToggle } from "./mode-toggle";
