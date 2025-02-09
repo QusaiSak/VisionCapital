@@ -160,22 +160,18 @@ export function ExpenseForm() {
     },
   });
 
-  async function onSubmit(values) {
-    try {
-      const newRecord = {
-        userId: user?.id ?? "",
-        description: values.description,
-        amount: parseFloat(values.amount),
-        category: values.category,
-        paymentMethod: values.paymentMethod,
-        date: new Date(values.date).toISOString(),
-      };
+  function onSubmit(values) {
+    const newRecord = {
+      userId: user?.id ?? "",
+      date: new Date(values.date),
+      description: values.description,
+      amount: parseFloat(values.amount),
+      category: values.category,
+      paymentMethod: values.paymentMethod,
+    };
 
-      await addExpenseRecord(newRecord);
-      form.reset();
-    } catch (error) {
-      console.error("Error submitting expense record:", error);
-    }
+    addExpenseRecord(newRecord);
+    form.reset();
   }
 
   return (
