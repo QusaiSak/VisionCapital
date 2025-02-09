@@ -111,17 +111,6 @@ router.delete("/income/:id", async (req, res) => {
   }
 });
 
-// Savings Goal Routes
-router.get("/savings-goal/:userId", async (req, res) => {
-  try {
-    const goal = await SavingsGoalModel.findOne({ userId: req.params.userId });
-    if (!goal) {
-      return res.status(404).json({ message: "No savings goal found" });
-    }
-    res.status(200).json(goal);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+
 
 module.exports = router;

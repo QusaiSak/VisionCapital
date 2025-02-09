@@ -6,7 +6,6 @@ import LandingPage from "./components/HomePage";
 import { useUser } from "@clerk/clerk-react";
 import { Route, Routes } from "react-router-dom";
 import DashBoard from "./components/DashBoard";
-import { SavingGoal } from "./components/SavingGoal";
 
 function App() {
   const { isSignedIn } = useUser(); 
@@ -19,7 +18,6 @@ function App() {
           <Route path="/" element={<DashBoard/>} />
           <Route path="/expense" element={<ExpenseForm/>} />
           <Route path="/income" element={<IncomeForm/>} />
-          <Route path="/saving-goal" element={<SavingGoal />} />
           <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
       ) : (

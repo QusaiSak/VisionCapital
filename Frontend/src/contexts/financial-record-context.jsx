@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext,useState } from "react";
 
 const BASE_URL = import.meta.env.BASE_URL; // Make sure this matches your backend URL
 
@@ -29,24 +29,6 @@ export const FinancialRecordsProvider = ({ children }) => {
       console.error('Error fetching records:', error);
     }
   };
-
-  const getSavingsGoal = async () => {
-    if (!user) return;
-    
-    try {
-      const response = await axios.get(`${BASE_URL}/savings-goal/${user.id}`);
-      setSavingsGoal(response.data);
-    } catch (error) {
-      console.error('Error fetching savings goal:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchRecords();
-      getSavingsGoal();
-    }
-  }, [user]);
 
   // Add expense record
   const addExpenseRecord = async (record) => {
