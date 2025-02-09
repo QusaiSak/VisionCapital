@@ -11,7 +11,6 @@ export const FinancialRecordsContext = createContext(undefined);
 export const FinancialRecordsProvider = ({ children }) => {
   const [expenseRecords, setExpenseRecords] = useState([]);
   const [incomeRecords, setIncomeRecords] = useState([]);
-  const [savingsGoal, setSavingsGoal] = useState(null);
   const { user } = useUser();
 
   const fetchRecords = async () => {
@@ -108,32 +107,7 @@ export const FinancialRecordsProvider = ({ children }) => {
   };
 
   // Add state and functions for savings goal
-  const addSavingsGoal = async (goalData) => {
-    try {
-      const response = await axios.post(`${BASE_URL}/api/savings-goal`, goalData);
-      setSavingsGoal(response.data);
-    } catch (error) {
-      console.error("Error adding savings goal:", error);
-    }
-  };
 
-  const updateSavingsGoal = async (goalId, updatedData) => {
-    try {
-      const response = await axios.put(`${BASE_URL}/api/savings-goal/${goalId}`, updatedData);
-      setSavingsGoal(response.data);
-    } catch (error) {
-      console.error("Error updating savings goal:", error);
-    }
-  };
-
-  const deleteSavingsGoal = async (goalId) => {
-    try {
-      await axios.delete(`${BASE_URL}/api/savings-goal/${goalId}`);
-      setSavingsGoal(null);
-    } catch (error) {
-      console.error("Error deleting savings goal:", error);
-    }
-  };
 
   // Provide context values
   return (
@@ -147,11 +121,6 @@ export const FinancialRecordsProvider = ({ children }) => {
         updateIncomeRecord,
         deleteExpenseRecord,
         deleteIncomeRecord,
-        savingsGoal,
-        addSavingsGoal,
-        getSavingsGoal,
-        updateSavingsGoal,
-        deleteSavingsGoal,
       }}
     >
       {children} {/* Ensure children are rendered */}
